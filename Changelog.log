@@ -1,0 +1,24 @@
+Version 1.3:
+Fixed: Issue with spaces in path name to backup.bat
+Fixed: Issues with relative paths in a few area's that were restricted to no spaces in path name.
+Changed: Compression settings it will now compress the backed up profiles the best it can to reduce disk space usage with large profiles.
+Fixed: Issue in some cases where the errorlog.log was unable to be created due to spaces in file path.
+Changed: Redirect output to console so status message can be seen, Note: not done in real time.
+New: Added OS Type check so the script only works on windows 7, windows 8|8.1 and windows 10
+
+Version 1.2:
+Fixed: Issue with path spacing in profile names for custom named profiles.
+Fixed: Creation of _backups folder when premature exit.
+Fixed: Refactored script to make it more readable.
+Added: Error handling for missing components required to do the backup task.
+Added: Errorlog.log file this file hold any logged error messages.
+Added: Backup archive log, These log files are located in _Backups\logs folder if a log for that profile exists the new archive log will be appended to the existing.
+Added: Documentation and clear licensing information.
+Added: Changelog information.
+
+Version 1.1:
+Fixed: Issue with scheduled task not reconsigning 7za.exe when placed in some directory's.
+Fixed: Exit code for scheduled task, Now registers correctly success and fail correctly.
+
+Version 1.0 initial
+script created
