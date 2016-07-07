@@ -23,6 +23,7 @@ if "%version%" == "6.1" goto :continue
 if "%version%" == "6.2" goto :continue
 if "%version%" == "6.3" goto :continue
 if "%version%" == "10.0" goto :continue
+goto :end
 endlocal
 
 :continue
