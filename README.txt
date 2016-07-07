@@ -22,7 +22,7 @@ Again it is very basic, It can run on the following operating systems
 windows 7
 windows 8
 windows 8.1
-windows 10 tech preview
+windows 10
 
 Now this is a very rough backup script and with running batch scripts there some times can be unforeseen errors that can result in the loss of or damage of files etc, So its use at your own risk, Also the created archives with the profile data could become corrupt or damaged so loss of profile data may occur please read License.txt.
 
