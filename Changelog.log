@@ -1,3 +1,8 @@
+Version 1.4:
+Fixed: Windows 10 detection.
+Fixed: OS check for when unknown os version occurs.
+Changed: Compression settings to utilize multi-core processors when available.
+
 Version 1.3:
 Fixed: Issue with spaces in path name to backup.bat
 Fixed: Issues with relative paths in a few area's that were restricted to no spaces in path name.
