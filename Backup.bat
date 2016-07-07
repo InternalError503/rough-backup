@@ -64,7 +64,7 @@ goto :end
 if not exist "%~DP0_backups" mkdir "%~DP0_backups"
 if not exist "%~DP0_backups\logs" mkdir "%~DP0_backups\logs"
 
-for /f "tokens=* delims=|" %%f in ('dir /b "%folderProfile%"') do "%~DP07za.exe" a -mx9 -t7z "%~DP0_backups\%%f_%curTimestamp%_.7z" "%folderProfile%\%%f"  > "%~DP0_backups\logs\%%f_backup.log" && type "%~DP0_backups\logs\%%f_backup.log"
+for /f "tokens=* delims=|" %%f in ('dir /b "%folderProfile%"') do "%~DP07za.exe" a -mmt -mx9 -t7z "%~DP0_backups\%%f_%curTimestamp%_.7z" "%folderProfile%\%%f"  > "%~DP0_backups\logs\%%f_backup.log" && type "%~DP0_backups\logs\%%f_backup.log"
 copy /y "%iniProfile%" "%~DP0_backups"
 
 if exist "%~DP0_backups\Profiles.ini" (
