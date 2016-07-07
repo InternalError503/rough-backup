@@ -1,80 +1,73 @@
-@echo off
-title Rough Backup Cyberfox Profile Windows 7-8-10 Version 1.4
+@ECHO OFF
+TITLE Rough Backup Cyberfox Profile Windows 7-8-10 [Version 2.0]
 
-setlocal
-for /f "tokens=4-5 delims=. " %%i in ('ver') do set VERSION=%%i.%%j
-if "%version%" == "5.0" (
-echo.Operating system is unsupported! >>"%~DP0errorlog.log"
-goto :end
-)
-if "%version%" == "5.1" (
-echo.Operating system is unsupported! >>"%~DP0errorlog.log"
-goto :end
-)
-if "%version%" == "5.2" (
-echo.Operating system is unsupported! >>"%~DP0errorlog.log"
-goto :end
-)
-if "%version%" == "6.0" (
-echo.Operating system is unsupported! >>"%~DP0errorlog.log"
-goto :end
-)
-if "%version%" == "6.1" goto :continue
-if "%version%" == "6.2" goto :continue
-if "%version%" == "6.3" goto :continue
-if "%version%" == "10.0" goto :continue
-goto :end
-endlocal
+:: SET current working directory.
+SET DIR=%~DP0
 
-:continue
-set curTimestamp=%date:~7,2%_%date:~3,3%_%date:~10,4%_%time:~0,2%_%time:~3,2%
+:: Set profile backups folder and directory.
+SET BACKUPSDIRECTORY=%DIR%_backups
 
-if exist "%userprofile%\AppData\Roaming\8pecxstudios" (
-set ProfilePath="%userprofile%\AppData\Roaming\8pecxstudios"
-) else (
-echo.Cyberfox profile folder not found!, Please check you have cyberfox installed and try again >>"%~DP0errorlog.log"
-goto :end
+:: Check current operating system is supported.
+Call "%DIR%Functions\Check_OS.bat"
+
+IF %ERRORLEVEL% EQU 0 (
+	GOTO :CONTINUE
+) ELSE IF %ERRORLEVEL% NEQ 0 (
+    GOTO :END  
 )
 
-if not exist "%~DP07za.exe" (
-echo.7za.exe not found!, Please unpack the archive and try again >>"%~DP0errorlog.log"
-goto :end
+:CONTINUE
+:: Set current date & time for time stamping files.
+SET CURRENTTIMESTAMP=%date:~7,2%_%date:~3,3%_%date:~10,4%_%time:~0,2%_%time:~3,2%
+
+:: Check if 8pecxsutdios folder in AppData\Roaming directory exists.
+IF EXIST "%userprofile%\AppData\Roaming\8pecxstudios" (
+    SET PROFILEPATH="%userprofile%\AppData\Roaming\8pecxstudios"
+) ELSE (
+    Call "%DIR%Functions\Error_Log.bat" "8pecxstudios folder in AppData\Roaming NOT found!, Please check you have cyberfox installed and try again" & GOTO :END
 )
 
-if exist "%ProfilePath%\Cyberfox\Profiles.ini" (
-set iniProfile="%ProfilePath%\Cyberfox\Profiles.ini"
-) else (
-echo.Cyberfox profiles.ini not found!, Please check you have cyberfox installed and try again >>"%~DP0errorlog.log"
-goto :end
+:: Check if profiles folder in AppData\Roaming\8pecxsutdios\Cyberfox directory exists.
+IF EXIST "%PROFILEPATH%\Cyberfox\Profiles" (
+    SET FOLDERPROFILE="%PROFILEPATH%\Cyberfox\Profiles"
+) ELSE (
+    Call "%DIR%Functions\Error_Log.bat" "Cyberfox profiles folder in AppData\Roaming\8pecxsutdios\Cyberfox NOT found!, Please check you have cyberfox installed and try again" & GOTO :END
 )
 
-if exist "%ProfilePath%\Cyberfox\Profiles" (
-set folderProfile="%ProfilePath%\Cyberfox\Profiles"
-) else (
-echo.Cyberfox profiles folder not found!, Please check you have cyberfox installed and try again >>"%~DP0errorlog.log"
-goto :end
+:: Check if Profiles.ini in AppData\Roaming\8pecxsutdios\Cyberfox directory exists.
+IF EXIST "%PROFILEPATH%\Cyberfox\Profiles.ini" (
+    SET INIPROFILE="%PROFILEPATH%\Cyberfox\Profiles.ini"
+) ELSE (
+    Call "%DIR%Functions\Error_Log.bat" "Cyberfox profiles.ini in AppData\Roaming\8pecxsutdios\Cyberfox NOT found!, Please check you have cyberfox installed and try again" & GOTO :END
 )
 
-tasklist /FI "IMAGENAME eq cyberfox.exe" 2>NUL | find /I /N "cyberfox.exe">NUL
-if "%ERRORLEVEL%"=="0" (
-echo Cyberfox is running, Please close before creating backups >>"%~DP0errorlog.log"
-goto :end
+:: Check if the standalone 7za.exe (7ZIP) is present in the current directory.
+IF NOT EXIST "%DIR%7za.exe" (
+    Call "%DIR%Functions\Error_Log.bat" "7za.exe in current directory NOT found or may be corrupt, Please unpack the archive and try again" & GOTO :END
 )
 
-if not exist "%~DP0_backups" mkdir "%~DP0_backups"
-if not exist "%~DP0_backups\logs" mkdir "%~DP0_backups\logs"
-
-for /f "tokens=* delims=|" %%f in ('dir /b "%folderProfile%"') do "%~DP07za.exe" a -mmt -mx9 -t7z "%~DP0_backups\%%f_%curTimestamp%_.7z" "%folderProfile%\%%f"  > "%~DP0_backups\logs\%%f_backup.log" && type "%~DP0_backups\logs\%%f_backup.log"
-copy /y "%iniProfile%" "%~DP0_backups"
-
-if exist "%~DP0_backups\Profiles.ini" (
-ren "%~DP0_backups\Profiles.ini" "Profiles_%curTimestamp%_.ini"
-) else (
-echo.Rough Backup encountered an error!, Rough Backup was unable to location or replace the existing Profiles_%curTimestamp%_.ini  >>"%~DP0errorlog.log"
-echo.Please check the backup was completed successfully >>"%~DP0errorlog.log"
-goto :end
+:: Check if cyberfox is currently running.
+TASKLIST /FI "IMAGENAME eq cyberfox.exe" 2>NUL | FIND /I /N "cyberfox.exe">NUL
+IF "%ERRORLEVEL%"=="0" (
+    Call "%DIR%Functions\Error_Log.bat" "Cyberfox is running, Please close before creating backups" & GOTO :END
 )
 
-:end
-popd
-exit /b %ERRORLEVEL%
+:: Check if the backups & logs directories exists if not create them.
+IF NOT EXIST "%BACKUPSDIRECTORY%" MKDIR "%BACKUPSDIRECTORY%"
+IF NOT EXIST "%BACKUPSDIRECTORY%\logs" MKDIR "%BACKUPSDIRECTORY%\logs"
+
+:: Create archives of all profiles found.
+FOR /f "tokens=* delims=|" %%f IN ('DIR /b "%FOLDERPROFILE%"') DO "%DIR%7za.exe" a -mmt -mx9 -t7z "%BACKUPSDIRECTORY%\%%f_%CURRENTTIMESTAMP%_.7z" "%FOLDERPROFILE%\%%f"  > "%BACKUPSDIRECTORY%\logs\%%f_backup.log" && TYPE "%BACKUPSDIRECTORY%\logs\%%f_backup.log"
+COPY /y "%INIPROFILE%" "%BACKUPSDIRECTORY%"
+
+:: Rename the copy of Profiles.ini with the same time stamp as the archived profiles.
+IF EXIST "%BACKUPSDIRECTORY%\Profiles.ini" (
+    REN "%BACKUPSDIRECTORY%\Profiles.ini" "Profiles_%CURRENTTIMESTAMP%_.ini"
+) ELSE (
+    Call "%DIR%Functions\Error_Log.bat" "Rough Backup encountered an error!, Rough Backup was unable to location or replace the existing Profiles_%CURRENTTIMESTAMP%_.ini"
+    Call "%DIR%Functions\Error_Log.bat" "Please check the backup was completed successfully" & GOTO :END
+)
+
+:END
+POPD
+EXIT /B %ERRORLEVEL%

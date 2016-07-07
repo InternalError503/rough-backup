@@ -1,4 +1,4 @@
-COPYRIGHT (C) 2015 8pecxstudios
+COPYRIGHT (C) 2012-2016 8pecxstudios
 
 Please read included licenses before using this Script|Software.
 
